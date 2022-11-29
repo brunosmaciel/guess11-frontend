@@ -1,67 +1,80 @@
+/* eslint-disable no-console */
+import { useEffect, useState } from 'react';
 
-import {Button, FormControl, FormLabel, Input, Modal, ModalBody, ModalCloseButton, ModalContent, ModalFooter, ModalHeader, ModalOverlay, useDisclosure} from '@chakra-ui/react';
-import {useRef, useState} from 'react';
+import {
+  FormControl,
+  FormLabel,
+  Input,
+  Modal,
+  ModalBody,
+  ModalCloseButton,
+  ModalContent,
+  ModalHeader,
+  ModalOverlay,
+  useDisclosure,
+} from '@chakra-ui/react';
+
+import { useAppDispatch, useAppSelector } from '../../app/store/hooks';
+import checkUserAnswer from '../../services/checkUserAnswer';
+import PlayerIcon from '../Avatar';
+import { finishGame, incrementController } from '../Game/scoreSlice';
+import { GameFinishModal } from '../GameEndingModal';
+
 type ModalProps = {
-	player: string;
-	avatar: string;
+  player: string;
 };
-function ModalGame({avatar, player}: ModalProps) {
-	const {isOpen, onOpen, onClose} = useDisclosure();
-	const [result, setResult] = useState(false);
-	const [attempts, setAttempts] = useState<string[]>([]);
-	const [inputValue, setInputValue] = useState('');
-
-	const initialRef = useRef(null);
-	const finalRef = useRef(null);
-	function handleCheckCorrectAnswer(inputValue: string): void {
-		setInputValue(inputValue);
-		if (inputValue.toLowerCase() === player.toLowerCase()) {
-			setResult(true);
-		}
-
-		if (inputValue.toLowerCase() !== player.toLowerCase()) {
-			setResult(false);
-		}
-	}
-
-	return (
-		<>
-			<img src={avatar} onClick={onOpen} ></img>
-			<Modal
-				initialFocusRef={initialRef}
-				finalFocusRef={finalRef}
-				isOpen={isOpen}
-				onClose={onClose}
-			>
-				<ModalOverlay />
-				<ModalContent>
-					<ModalHeader>{result ? player : '*'.repeat(player.length)}</ModalHeader>
-					<ModalCloseButton />
-					<ModalBody pb={6}>
-						<FormControl>
-							<FormLabel>First name</FormLabel>
-							<Input ref={initialRef} placeholder='First name' onChange={e => {
-								handleCheckCorrectAnswer(e.target.value);
-							}}/>
-						</FormControl>
-						<h1>Tentativas</h1>
-						<div>{attempts.map(att => (
-							<p key={att}>{att}</p>
-						))}</div>
-					</ModalBody>
-
-					<ModalFooter>
-						<Button colorScheme='green' mr={3} onClick={() => {
-							setAttempts(prevState => [...prevState, inputValue]);
-						}}>
-              Save
-						</Button>
-						<Button onClick={onClose}>Cancel</Button>
-					</ModalFooter>
-				</ModalContent>
-			</Modal>
-		</>
-	);
+function ModalGame({ player }: ModalProps) {
+  // redux
+  const dispatch = useAppDispatch();
+  const { gameIndex, gameFinished } = useAppSelector(
+    (state) => state.persistedReducer.counter.gameController,
+  );
+  const { isOpen, onOpen, onClose } = useDisclosure();
+  const [isCorrect, setIsCorrect] = useState<boolean>(false);
+  const [trysArray, setTrysArray] = useState<string[]>([]);
+  useEffect(() => {
+    gameIndex === 11 ? dispatch(finishGame()) : '';
+  }, [dispatch, gameIndex]);
+  function handleChange({
+    target: { value },
+  }: React.ChangeEvent<HTMLInputElement>): void {
+    if (checkUserAnswer(player, value)) {
+      setIsCorrect(true);
+      onClose(); // Close Modal
+      dispatch(incrementController());
+      return;
+    }
+    value.length === player.length
+      ? setTrysArray((prevState) => [...prevState, value])
+      : '';
+  }
+  return (
+    <>
+      <PlayerIcon onOpen={onOpen} correct={isCorrect} player={player} />
+      <GameFinishModal gameStatus={gameFinished} onOpen={onOpen} />
+      <Modal isOpen={isOpen} onClose={onClose}>
+        <ModalOverlay />
+        <ModalContent>
+          <ModalHeader>{isCorrect ? player : '*'.repeat(player.length)}</ModalHeader>
+          <ModalCloseButton />
+          <ModalBody pb={6}>
+            <FormControl>
+              <FormLabel>Digite aqui o jogador</FormLabel>
+              <Input placeholder="Nome do jogador" onChange={handleChange} />
+            </FormControl>
+            <h1>Tentativas</h1>
+            {
+              <div>
+                {trysArray.map((att) => (
+                  <p key={att}>{att}</p>
+                ))}
+              </div>
+            }
+          </ModalBody>
+        </ModalContent>
+      </Modal>
+    </>
+  );
 }
 
 export default ModalGame;
