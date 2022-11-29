@@ -34,7 +34,7 @@ const Main = () => {
             dispatch(startGame());
           }}
         >
-          Jogar como convidado
+          Jogar como convidado1
         </Button>
 
         <span>
