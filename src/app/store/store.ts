@@ -1,16 +1,28 @@
 import { configureStore, combineReducers } from '@reduxjs/toolkit';
 import { persistReducer, persistStore } from 'redux-persist';
+import expireReducer from 'redux-persist-expire';
 import storage from 'redux-persist/lib/storage';
 import thunk from 'redux-thunk';
 
-import { authSlice } from '../../../EXAMPLE_REDUCER';
 import { scoreControllerSlice } from '../../components/Game/scoreSlice';
+import { authSlice } from '../../components/Login/authSlice';
 const reducer = combineReducers({
   auth: authSlice.reducer,
   counter: scoreControllerSlice.reducer,
 });
 const persistConfig = {
   key: 'root',
+  transform: [
+    expireReducer('root', {
+      persistedAtKey: 'loadedAt',
+      expireSeconds: 15,
+      expiredState: {
+        auth: {
+          isLoggedIn: false,
+        },
+      },
+    }),
+  ],
   storage,
 };
 const persistedReducer = persistReducer(persistConfig, reducer);

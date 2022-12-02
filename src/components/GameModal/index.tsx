@@ -16,6 +16,7 @@ import {
 
 import { useAppDispatch, useAppSelector } from '../../app/store/hooks';
 import checkUserAnswer from '../../services/checkUserAnswer';
+import { playerStringToAsterisk } from '../../services/transformPlayerName';
 import PlayerIcon from '../Avatar';
 import { finishGame, incrementController } from '../Game/scoreSlice';
 import { GameFinishModal } from '../GameEndingModal';
@@ -55,7 +56,7 @@ function ModalGame({ player }: ModalProps) {
       <Modal isOpen={isOpen} onClose={onClose}>
         <ModalOverlay />
         <ModalContent>
-          <ModalHeader>{isCorrect ? player : '*'.repeat(player.length)}</ModalHeader>
+          <ModalHeader>{isCorrect ? player : playerStringToAsterisk(player)}</ModalHeader>
           <ModalCloseButton />
           <ModalBody pb={6}>
             <FormControl>

@@ -23,7 +23,7 @@ type GameReducer = {
   };
 };
 
-// Define the initial state using that type
+const EXPIRE_TIME = 172800000;
 const initialState: GameReducer = {
   score: 1000,
   gameController: {

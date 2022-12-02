@@ -12,7 +12,6 @@ const Game = () => {
   const secondLine = [newObj.player6, newObj.player7];
   const thirLine = [newObj.player8, newObj.player9, newObj.player10];
   const forthLine = [newObj.player11];
-  console.table(gameController);
   return (
     <Container>
       <PlayersFlexContainer>

@@ -1,8 +1,11 @@
+import { useAppSelector } from '../../app/store/hooks';
 import { Container } from './styled';
 
 const Nav = () => {
-  const isLoggedIn = false;
-  const user = 'Bruno';
+  const {
+    isLoggedIn,
+    user: { username },
+  } = useAppSelector(({ persistedReducer: { auth } }) => auth);
   return (
     <>
       <Container>
@@ -12,7 +15,7 @@ const Nav = () => {
             <a href="/">11</a>
           </span>
         </h1>
-        <p>{isLoggedIn ? user : ''}</p>
+        <p>{isLoggedIn ? username : ''}</p>
       </Container>
     </>
   );

@@ -5,6 +5,7 @@ export const AvatarContainer = styled.div`
   flex-direction: column;
   justify-content: center;
   align-items: center;
+  overflow: visible;
 
   max-width: 60px;
   svg {
@@ -13,8 +14,9 @@ export const AvatarContainer = styled.div`
     cursor: pointer;
   }
   h1 {
-    font-size: 12px;
-    word-wrap: break-all;
+    font-size: 14px;
+    width: 200%;
+    overflow: visible;
     text-align: center;
     letter-spacing: 1px;
   }
